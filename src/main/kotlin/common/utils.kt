@@ -1,11 +1,12 @@
 package common
 
-import area.AreaEntity
+import com.example.data.area.AreaEntity
+import com.example.data.equipment.EquipmentEntity
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
-import organization.OrganizationEntity
-import powerPlants.PowerPlantEntity
-import powerUnits.PowerUnitEntity
+import com.example.data.organization.OrganizationEntity
+import com.example.data.powerPlants.PowerPlantEntity
+import com.example.data.powerUnits.PowerUnitEntity
 
 fun initAreas() {
     if (AreaEntity.count() > 0) return
@@ -41,8 +42,8 @@ fun initOrganizations() {
     rows.forEach { row ->
         val id = row["id"]!!.toInt()
         val entity = OrganizationEntity.new(id) {
-            fullName = row["full_name"]!!
-            shortName = row["short_name"]!!
+            name = row["name"]!!
+            shortName = row["short_name"]
             parent = null
 
             area = row["area_id"]?.toInt()?.let { AreaEntity.findById(it) }
@@ -67,14 +68,14 @@ fun initOrganizations() {
 fun initPowerPlants() {
     if (PowerPlantEntity.count() > 0) return
 
-    val rows = readCsv("/data/powerPlants.csv")
+    val rows = readCsv("/data/power_plants.csv")
     val map = mutableMapOf<Int, PowerPlantEntity>()
 
     rows.forEach { row ->
         val id = row["id"]!!.toInt()
         val entity = PowerPlantEntity.new(id) {
-            fullName = row["full_name"]!!
-            shortName = row["short_name"]!!
+            name = row["name"]!!
+            shortName = row["short_name"]
             parent = row["parent_id"]?.toInt()?.let { OrganizationEntity.findById(it) }
 
             area = row["area_id"]?.toInt()?.let { AreaEntity.findById(it) }
@@ -94,18 +95,38 @@ fun initPowerPlants() {
 fun initPowerUnits() {
     if (PowerUnitEntity.count() > 0) return
 
-    val rows = readCsv("/data/powerUnits.csv")
+    val rows = readCsv("/data/power_units.csv")
     val map = mutableMapOf<Int, PowerUnitEntity>()
 
     rows.forEach { row ->
         val id = row["id"]!!.toInt()
         val entity = PowerUnitEntity.new(id) {
-            fullName = row["full_name"]!!
-            shortName = row["short_name"]!!
-            plant = row["plant_id"]?.toInt()?.let { PowerPlantEntity.findById(it) }
+            name = row["name"]!!
+            shortName = row["short_name"]
+            powerPlant = row["plant_id"]?.toInt()?.let { PowerPlantEntity.findById(it) }
 
             type = row["type"]
             capacity = row["capacity"]?.toDouble()
+        }
+        map[id] = entity
+    }
+}
+
+fun initEquipment() {
+    if (EquipmentEntity.count() > 0) return
+
+    val rows = readCsv("/data/equipment.csv")
+    val map = mutableMapOf<Int, EquipmentEntity>()
+
+    rows.forEach { row ->
+        val id = row["id"]!!.toInt()
+        val entity = EquipmentEntity.new(id) {
+            name = row["name"]!!
+            shortName = row["short_name"]
+            powerUnit = row["power_unit_id"]?.toInt()?.let { PowerUnitEntity.findById(it) }
+
+            type = row["type"]
+            customAttributes = row["custom_attributes"]
         }
         map[id] = entity
     }
@@ -116,13 +137,13 @@ fun readCsv(resourcePath: String): List<Map<String, String?>> {
         ?: error("CSV not found: $resourcePath")
 
     stream.bufferedReader().use { reader ->
-        val parser = CSVParser(
-            reader,
-            CSVFormat.DEFAULT
-                .withFirstRecordAsHeader()
-                .withIgnoreSurroundingSpaces()
-                .withTrim()
-        )
+        val format = CSVFormat.DEFAULT.builder()
+            .setHeader()
+            .setIgnoreSurroundingSpaces(true)
+            .setTrim(true)
+            .get()
+
+        val parser = CSVParser.parse(reader, format)
 
         return parser.records.map { record ->
             parser.headerMap.keys.associateWith { header ->

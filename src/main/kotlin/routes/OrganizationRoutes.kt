@@ -1,16 +1,15 @@
 package routes
 
-import com.example.organization.OrganizationCreateDto
+import com.example.data.organization.OrganizationCreateDto
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import organization.OrganizationDto
-import organization.OrganizationRepository
+import com.example.data.organization.OrganizationRepository
 
 fun Route.organizationRoutes(repository: OrganizationRepository) {
 
-    route("organizations") {
+    route("organization") {
 
         get {
             call.respond(HttpStatusCode.OK, repository.getAll())

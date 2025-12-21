@@ -1,15 +1,18 @@
-package routes
+package com.example.routes
 
-import com.example.data.area.AreaDto
-import com.example.data.area.AreaRepository
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
+import com.example.data.equipment.EquipmentDto
+import com.example.data.equipment.EquipmentRepository
+import com.example.data.powerPlants.PowerPlantCreateDto
+import com.example.data.powerUnits.PowerUnitDto
+import com.example.data.powerUnits.PowerUnitRepository
+import io.ktor.http.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Route.areaRoutes(repository: AreaRepository) {
+fun Route.equipmentRoutes(repository: EquipmentRepository) {
 
-    route("area") {
+    route("equipment") {
 
         get {
             call.respond(HttpStatusCode.OK, repository.getAll())
@@ -24,14 +27,14 @@ fun Route.areaRoutes(repository: AreaRepository) {
         }
 
         post {
-            val dto = call.receive<AreaDto>()
+            val dto = call.receive<EquipmentDto>()
             val created = repository.create(dto)
             call.respond(HttpStatusCode.Created, created)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val dto = call.receive<AreaDto>()
+            val dto = call.receive<EquipmentDto>()
 
             if (!repository.update(id, dto)) {
                 call.respond(HttpStatusCode.NotFound)
