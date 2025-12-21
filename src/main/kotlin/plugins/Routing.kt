@@ -1,10 +1,6 @@
 package com.example.plugins
 
 import area.AreaRepository
-import routes.areaRoutes
-import routes.organizationRoutes
-import routes.userRoutes
-import com.example.user.UserRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -13,12 +9,13 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import organization.OrganizationRepository
 import powerPlants.PowerPlantRepository
+import routes.areaRoutes
+import routes.organizationRoutes
 import routes.powerPlantRoutes
 import java.io.File
 
 fun Application.configureRouting(
     areaRepository: AreaRepository,
-    userRepository: UserRepository,
     organizationRepository: OrganizationRepository,
     powerPlantRepository: PowerPlantRepository
 ) {
@@ -40,7 +37,6 @@ fun Application.configureRouting(
         }
 
         areaRoutes(areaRepository)
-        userRoutes(userRepository)
         organizationRoutes(organizationRepository)
         powerPlantRoutes(powerPlantRepository)
 

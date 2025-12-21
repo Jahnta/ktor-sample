@@ -1,7 +1,6 @@
 package plugins
 
 import area.AreaTable
-import com.example.models.UserTable
 import common.initAreas
 import common.initOrganizations
 import common.initPowerPlants
@@ -35,14 +34,12 @@ fun Application.configureDatabases() {
         addLogger(StdOutSqlLogger)
 
         SchemaUtils.drop(
-            UserTable,
             AreaTable,
             OrganizationTable,
             PowerPlantTable,
             PowerUnitTable,
         )
         SchemaUtils.create(
-            UserTable,
             AreaTable,
             OrganizationTable,
             PowerPlantTable,
