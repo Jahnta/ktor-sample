@@ -2,9 +2,6 @@ package com.example.routes
 
 import com.example.data.equipment.EquipmentDto
 import com.example.data.equipment.EquipmentRepository
-import com.example.data.powerPlants.PowerPlantCreateDto
-import com.example.data.powerUnits.PowerUnitDto
-import com.example.data.powerUnits.PowerUnitRepository
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*

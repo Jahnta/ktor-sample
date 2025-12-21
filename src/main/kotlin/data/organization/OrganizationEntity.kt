@@ -5,8 +5,8 @@ import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
-import com.example.data.powerPlants.PowerPlantEntity
-import com.example.data.powerPlants.PowerPlantTable
+import com.example.data.powerplant.PowerPlantEntity
+import com.example.data.powerplant.PowerPlantTable
 
 class OrganizationEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<OrganizationEntity>(OrganizationTable)

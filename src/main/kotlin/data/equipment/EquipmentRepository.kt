@@ -1,6 +1,6 @@
 package com.example.data.equipment
 
-import com.example.data.powerUnits.PowerUnitEntity
+import com.example.data.powerunit.PowerUnitEntity
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 
 class EquipmentRepository {

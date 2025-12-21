@@ -5,8 +5,8 @@ import com.example.data.equipment.EquipmentEntity
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import com.example.data.organization.OrganizationEntity
-import com.example.data.powerPlants.PowerPlantEntity
-import com.example.data.powerUnits.PowerUnitEntity
+import com.example.data.powerplant.PowerPlantEntity
+import com.example.data.powerunit.PowerUnitEntity
 
 fun initAreas() {
     if (AreaEntity.count() > 0) return

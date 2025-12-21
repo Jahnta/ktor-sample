@@ -2,7 +2,7 @@ package com.example.data.equipment
 
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
-import com.example.data.powerUnits.PowerUnitTable
+import com.example.data.powerunit.PowerUnitTable
 
 object EquipmentTable: IntIdTable("equipment") {
     val name = varchar("name", 200)

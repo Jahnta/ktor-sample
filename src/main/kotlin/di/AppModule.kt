@@ -4,8 +4,8 @@ import com.example.data.area.AreaRepository
 import com.example.data.equipment.EquipmentRepository
 import org.koin.dsl.module
 import com.example.data.organization.OrganizationRepository
-import com.example.data.powerPlants.PowerPlantRepository
-import com.example.data.powerUnits.PowerUnitRepository
+import com.example.data.powerplant.PowerPlantRepository
+import com.example.data.powerunit.PowerUnitRepository
 
 val appModule = module {
     single { AreaRepository() }

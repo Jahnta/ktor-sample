@@ -9,8 +9,8 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import com.example.data.organization.OrganizationRepository
-import com.example.data.powerPlants.PowerPlantRepository
-import com.example.data.powerUnits.PowerUnitRepository
+import com.example.data.powerplant.PowerPlantRepository
+import com.example.data.powerunit.PowerUnitRepository
 import com.example.routes.equipmentRoutes
 import com.example.routes.powerUnitRoutes
 import routes.areaRoutes

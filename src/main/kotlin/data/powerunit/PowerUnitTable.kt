@@ -1,8 +1,8 @@
-package com.example.data.powerUnits
+package com.example.data.powerunit
 
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
-import com.example.data.powerPlants.PowerPlantTable
+import com.example.data.powerplant.PowerPlantTable
 
 object PowerUnitTable: IntIdTable("power_units") {
     val name = varchar("name", 200)

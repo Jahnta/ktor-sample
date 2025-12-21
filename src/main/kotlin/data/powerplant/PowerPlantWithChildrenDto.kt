@@ -1,8 +1,8 @@
-package com.example.data.powerPlants
+package com.example.data.powerplant
 
 import com.example.data.area.AreaDto
 import kotlinx.serialization.Serializable
-import com.example.data.powerUnits.PowerUnitDto
+import com.example.data.powerunit.PowerUnitDto
 import kotlinx.serialization.SerialName
 
 @Serializable

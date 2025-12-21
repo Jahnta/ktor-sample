@@ -1,4 +1,4 @@
-package com.example.data.powerPlants
+package com.example.data.powerplant
 
 import com.example.data.area.AreaTable
 import org.jetbrains.exposed.v1.core.ReferenceOption

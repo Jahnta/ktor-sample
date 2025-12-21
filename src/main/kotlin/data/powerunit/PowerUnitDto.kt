@@ -1,4 +1,4 @@
-package com.example.data.powerUnits
+package com.example.data.powerunit
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

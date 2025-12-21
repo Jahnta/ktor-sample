@@ -1,4 +1,4 @@
-package com.example.data.powerPlants
+package com.example.data.powerplant
 
 import com.example.data.area.AreaEntity
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction

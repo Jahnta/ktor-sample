@@ -1,11 +1,11 @@
 package routes
 
-import com.example.data.powerPlants.PowerPlantCreateDto
+import com.example.data.powerplant.PowerPlantCreateDto
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import com.example.data.powerPlants.PowerPlantRepository
+import com.example.data.powerplant.PowerPlantRepository
 
 fun Route.powerPlantRoutes(repository: PowerPlantRepository) {
 

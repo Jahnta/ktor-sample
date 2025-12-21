@@ -1,4 +1,4 @@
-package com.example.data.powerPlants
+package com.example.data.powerplant
 
 import com.example.data.area.AreaEntity
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
@@ -6,8 +6,8 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
 import com.example.data.organization.OrganizationEntity
-import com.example.data.powerUnits.PowerUnitEntity
-import com.example.data.powerUnits.PowerUnitTable
+import com.example.data.powerunit.PowerUnitEntity
+import com.example.data.powerunit.PowerUnitTable
 
 class PowerPlantEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<PowerPlantEntity>(PowerPlantTable)

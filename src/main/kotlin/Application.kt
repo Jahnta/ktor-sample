@@ -11,8 +11,8 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import com.example.data.organization.OrganizationRepository
 import plugins.configureDatabases
-import com.example.data.powerPlants.PowerPlantRepository
-import com.example.data.powerUnits.PowerUnitRepository
+import com.example.data.powerplant.PowerPlantRepository
+import com.example.data.powerunit.PowerUnitRepository
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)

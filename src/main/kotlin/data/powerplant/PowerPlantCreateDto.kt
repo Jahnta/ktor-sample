@@ -1,4 +1,4 @@
-package com.example.data.powerPlants
+package com.example.data.powerplant
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
