@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Reference Data</title>
+<style>
+body { margin:0; font-family:sans-serif; background:#fafafa; }
+.layout { display:flex; height:100vh; }
+.content { flex:1; overflow:auto; }
+.page { display:flex; gap:20px; height:100%; padding:10px; box-sizing:border-box; }
+.left { width:300px; flex-shrink:0; }
+.right { flex:1; display:flex; flex-direction:column; gap:10px; }
+.right #tree { flex:0 0 200px; overflow:auto; padding:5px; border:1px solid #ddd; border-radius:4px; background:#f9f9f9; }
+.right pre { flex:1; overflow:auto; background:#f4f4f4; padding:10px; box-sizing:border-box; border:1px solid #ddd; border-radius:4px; }
+section { margin-bottom:10px; }
+input, button { width:100%; padding:6px; margin-top:5px; box-sizing:border-box; }
+button { cursor:pointer; background:#3498db; color:white; border:none; border-radius:3px; }
+button:hover { background:#2980b9; }
+.menu { width:180px; background:#2c3e50; color:white; padding:20px; box-sizing:border-box; height:100vh; }
+.menu h2 { font-size:18px; margin-bottom:15px; }
+.menu button { width:100%; margin-bottom:10px; padding:8px; background:#34495e; color:white; border:none; cursor:pointer; text-align:left; font-size:14px; }
+.menu button.active { background:#1abc9c; font-weight:bold; }
+.page h1 { margin:0 0 10px 0; font-size:20px; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+<aside class="menu">
+<h2>Справочники</h2>
+<button onclick="loadPage('organizations')" id="btn-organizations">Organizations</button>
+<button onclick="loadPage('powerPlants')" id="btn-plants">Plants</button>
+</aside>
+
+<main class="content" id="content"></main>
+</div>
+
+<script>
+// ===== API =====
+function num(v){ return v===''?null:parseInt(v); }
+async function apiGet(url){ return fetch(url).then(r=>r.json()); }
+async function apiPost(url,body){ return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.text()); }
+async function apiPut(url,body){ return fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.text()); }
+async function apiDelete(url){ return fetch(url,{method:'DELETE'}).then(r=>r.text()); }
+function show(data){document.getElementById('result').textContent=typeof data==='string'?data:JSON.stringify(data,null,2);}
+let tree;
+function renderTree(nodes,container){ container.innerHTML=''; const ul=document.createElement('ul'); nodes.forEach(n=>{ const li=document.createElement('li'); li.textContent=n.name||n.fullName; const children=n.organizations||n.powerPlants; if(children&&children.length){ renderTree(children,li); } ul.appendChild(li); }); container.appendChild(ul); }
+
+// ===== Pages =====
+const pages={
+organizations:`<h1>Organizations</h1>
+<div class="page">
+<div class="left">
+<section><button onclick="getAllOrganizations()">Показать все</button></section>
+<section><input id="orgGetId" type="number" placeholder="ID"><button onclick="getOrganizationById()">Найти по ID</button></section>
+<section>
+<input id="orgFullName" placeholder="Full name">
+<input id="orgShortName" placeholder="Short name">
+<input id="orgParentId" type="number" placeholder="Parent ID">
+<input id="orgAreaId" type="number" placeholder="Area ID">
+<input id="orgAddress" placeholder="Address">
+<input id="orgEmail" placeholder="Email">
+<input id="orgWebsite" placeholder="Website">
+<input id="orgPhone" placeholder="Phone">
+<button onclick="createOrganization()">Создать</button>
+</section>
+<section>
+<input id="orgEditId" type="number" placeholder="ID">
+<input id="orgEditFullName" placeholder="Full name">
+<input id="orgEditShortName" placeholder="Short name">
+<input id="orgEditParentId" type="number" placeholder="Parent ID">
+<input id="orgEditAreaId" type="number" placeholder="Area ID">
+<input id="orgEditAddress" placeholder="Address">
+<input id="orgEditEmail" placeholder="Email">
+<input id="orgEditWebsite" placeholder="Website">
+<input id="orgEditPhone" placeholder="Phone">
+<button onclick="editOrganization()">Редактировать</button>
+</section>
+<section><input id="orgDeleteId" type="number" placeholder="ID"><button onclick="deleteOrganization()">Удалить</button></section>
+</div>
+<div class="right"><div id="tree"></div><pre id="result"></pre></div>
+</div>`,
+
+powerPlants:`<h1>Plants</h1>
+<div class="page">
+<div class="left">
+<section><button onclick="getAllPlants()">Показать все</button></section>
+<section><input id="plantGetId" type="number" placeholder="ID"><button onclick="getPlantById()">Найти по ID</button></section>
+<section>
+<input id="plantFullName" placeholder="Full name">
+<input id="plantShortName" placeholder="Short name">
+<input id="plantParentId" type="number" placeholder="Organization ID">
+<input id="plantAreaId" type="number" placeholder="Area ID">
+<input id="plantAddress" placeholder="Address">
+<button onclick="createPlant()">Создать</button>
+</section>
+<section>
+<input id="plantEditId" type="number" placeholder="ID">
+<input id="plantEditFullName" placeholder="Full name">
+<input id="plantEditShortName" placeholder="Short name">
+<input id="plantEditParentId" type="number" placeholder="Organization ID">
+<input id="plantEditAreaId" type="number" placeholder="Area ID">
+<input id="plantEditAddress" placeholder="Address">
+<button onclick="editPlant()">Редактировать</button>
+</section>
+<section><input id="plantDeleteId" type="number" placeholder="ID"><button onclick="deletePlant()">Удалить</button></section>
+</div>
+<div class="right"><div id="tree"></div><pre id="result"></pre></div>
+</div>`
+};
+
+function loadPage(name){
+document.getElementById('content').innerHTML=pages[name];
+document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
+document.getElementById(`btn-${name}`).classList.add('active');
+tree=document.getElementById('tree');
+if(name==='organizations'){ init_organizations(); }
+if(name==='powerPlants'){ init_plants(); }
+}
+
+loadPage('organizations');
+
+// ===== Organizations =====
+function init_organizations(){}
+async function getAllOrganizations(){ const data=await apiGet('/organizations'); renderTree(data,tree); show(data); }
+async function getOrganizationById(){ show(await apiGet(`/organizations/${orgGetId.value}`)); }
+async function createOrganization(){ show(await apiPost('/organizations',{
+id:0, fullName:orgFullName.value, shortName:orgShortName.value, parentId:num(orgParentId.value),
+areaId:num(orgAreaId.value), address:orgAddress.value, email:orgEmail.value, website:orgWebsite.value, phoneNumber:orgPhone.value
+})); }
+async function editOrganization(){ show(await apiPut(`/organizations/${orgEditId.value}`,{
+fullName:orgEditFullName.value, shortName:orgEditShortName.value, parentId:num(orgEditParentId.value),
+areaId:num(orgEditAreaId.value), address:orgEditAddress.value, email:orgEditEmail.value, website:orgEditWebsite.value, phoneNumber:orgEditPhone.value
+})); }
+async function deleteOrganization(){ show(await apiDelete(`/organizations/${orgDeleteId.value}`)); }
+
+// ===== Plants =====
+function init_plants(){}
+async function getAllPlants(){ const data=await apiGet('/powerPlants'); renderTree(data,tree); show(data); }
+async function getPlantById(){ show(await apiGet(`/powerPlants/${plantGetId.value}`)); }
+async function createPlant(){ show(await apiPost('/powerPlants',{
+id:0, fullName:plantFullName.value, shortName:plantShortName.value,
+parentId:num(plantParentId.value), areaId:num(plantAreaId.value), address:plantAddress.value
+})); }
+async function editPlant(){ show(await apiPut(`/powerPlants/${plantEditId.value}`,{
+fullName:plantEditFullName.value, shortName:plantEditShortName.value,
+parentId:num(plantEditParentId.value), areaId:num(plantEditAreaId.value), address:plantEditAddress.value
+})); }
+async function deletePlant(){ show(await apiDelete(`/powerPlants/${plantDeleteId.value}`)); }
+
+</script>
+</body>
+</html>
