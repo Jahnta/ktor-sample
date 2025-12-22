@@ -9,7 +9,7 @@ import io.ktor.server.routing.*
 
 fun Route.areaRoutes(repository: AreaRepository) {
 
-    route("area") {
+    route("areas") {
 
         get {
             call.respond(HttpStatusCode.OK, repository.getAll())

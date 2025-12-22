@@ -30,7 +30,7 @@ class PowerUnitEntity(id: EntityID<Int>) : IntEntity(id) {
     )
 
     fun toDtoWithChildren(): PowerUnitWithChildrenDto {
-        val equipment = EquipmentEntity.find { EquipmentTable.powerUnitId eq id.value }.map { it.toDto() }
+        val equipment = EquipmentEntity.find { EquipmentTable.powerUnitId eq this.id }.map { it.toDto() }
 
         return PowerUnitWithChildrenDto(
             id = id.value,

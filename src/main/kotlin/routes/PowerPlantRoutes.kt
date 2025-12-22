@@ -9,7 +9,7 @@ import com.example.data.powerplant.PowerPlantRepository
 
 fun Route.powerPlantRoutes(repository: PowerPlantRepository) {
 
-    route("power-plant") {
+    route("power-plants") {
 
         get {
             call.respond(HttpStatusCode.OK, repository.getAll())

@@ -10,8 +10,8 @@ class PowerPlantRepository {
         PowerPlantEntity.all().map { it.toDtoWithChildren() }
     }
 
-    suspend fun getById(id: Int): PowerPlantDto? = suspendTransaction {
-        PowerPlantEntity.findById(id)?.toDto()
+    suspend fun getById(id: Int): PowerPlantWithChildrenDto? = suspendTransaction {
+        PowerPlantEntity.findById(id)?.toDtoWithChildren()
     }
 
     suspend fun create(dto: PowerPlantCreateDto): PowerPlantCreateDto = suspendTransaction {

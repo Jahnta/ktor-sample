@@ -1,15 +1,15 @@
-package com.example.routes
+package routes
 
-import com.example.data.powerunit.PowerUnitDto
-import com.example.data.powerunit.PowerUnitRepository
+import com.example.data.equipment.EventRepository
+import com.example.data.event.EventDto
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Route.powerUnitRoutes(repository: PowerUnitRepository) {
+fun Route.eventRoutes(repository: EventRepository) {
 
-    route("power-units") {
+    route("events") {
 
         get {
             call.respond(HttpStatusCode.OK, repository.getAll())
@@ -24,14 +24,14 @@ fun Route.powerUnitRoutes(repository: PowerUnitRepository) {
         }
 
         post {
-            val dto = call.receive<PowerUnitDto>()
+            val dto = call.receive<EventDto>()
             val created = repository.create(dto)
             call.respond(HttpStatusCode.Created, created)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val dto = call.receive<PowerUnitDto>()
+            val dto = call.receive<EventDto>()
 
             if (!repository.update(id, dto)) {
                 call.respond(HttpStatusCode.NotFound)

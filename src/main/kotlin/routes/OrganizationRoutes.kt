@@ -9,7 +9,7 @@ import com.example.data.organization.OrganizationRepository
 
 fun Route.organizationRoutes(repository: OrganizationRepository) {
 
-    route("organization") {
+    route("organizations") {
 
         get {
             call.respond(HttpStatusCode.OK, repository.getAll())

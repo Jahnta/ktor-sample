@@ -2,6 +2,7 @@ package com.example.plugins
 
 import com.example.data.area.AreaRepository
 import com.example.data.equipment.EquipmentRepository
+import com.example.data.equipment.EventRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -14,6 +15,7 @@ import com.example.data.powerunit.PowerUnitRepository
 import com.example.routes.equipmentRoutes
 import com.example.routes.powerUnitRoutes
 import routes.areaRoutes
+import routes.eventRoutes
 import routes.organizationRoutes
 import routes.powerPlantRoutes
 import java.io.File
@@ -23,7 +25,8 @@ fun Application.configureRouting(
     organizationRepository: OrganizationRepository,
     powerPlantRepository: PowerPlantRepository,
     powerUnitRepository: PowerUnitRepository,
-    equipmentRepository: EquipmentRepository
+    equipmentRepository: EquipmentRepository,
+    eventRepository: EventRepository,
 ) {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
@@ -46,6 +49,7 @@ fun Application.configureRouting(
         powerPlantRoutes(powerPlantRepository)
         powerUnitRoutes(powerUnitRepository)
         equipmentRoutes(equipmentRepository)
+        eventRoutes(eventRepository)
 
     }
 }

@@ -7,6 +7,8 @@ import org.apache.commons.csv.CSVParser
 import com.example.data.organization.OrganizationEntity
 import com.example.data.powerplant.PowerPlantEntity
 import com.example.data.powerunit.PowerUnitEntity
+import data.event.EventEntity
+import kotlinx.datetime.LocalDate
 
 fun initAreas() {
     if (AreaEntity.count() > 0) return
@@ -124,6 +126,29 @@ fun initEquipment() {
             name = row["name"]!!
             shortName = row["short_name"]
             powerUnit = row["power_unit_id"]?.toInt()?.let { PowerUnitEntity.findById(it) }
+
+            type = row["type"]
+            customAttributes = row["custom_attributes"]
+        }
+        map[id] = entity
+    }
+}
+
+fun initEvents() {
+    if (EventEntity.count() > 0) return
+
+    val rows = readCsv("/data/events.csv")
+    val map = mutableMapOf<Int, EventEntity>()
+
+    rows.forEach { row ->
+        val id = row["id"]!!.toInt()
+        val entity = EventEntity.new(id) {
+            name = row["name"]!!
+            shortName = row["short_name"]
+            equipment = row["equipment_id"]?.toInt()?.let { EquipmentEntity.findById(it) }
+
+            dateStart = row["date_start"]?.let { LocalDate.parse(it) }
+            dateEnd = row["date_end"]?.let { LocalDate.parse(it) }
 
             type = row["type"]
             customAttributes = row["custom_attributes"]

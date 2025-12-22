@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Reference Data</title>
+    <style>
+        body { margin:0; font-family:sans-serif; background:#fafafa; }
+        .layout { display:flex; height:100vh; }
+        .menu { width:220px; background:#2c3e50; color:white; padding:20px; }
+        .menu h3 { margin-top:0; }
+        .menu button { width:100%; margin-bottom:10px; background:#34495e; color:white; text-align:left; border:none; padding:8px; cursor:pointer; }
+        .menu button.active { background:#1abc9c; }
+        .content { flex:1; overflow:auto; padding:10px; }
+        h1 { margin-top:0; }
+        .cards { display:flex; flex-wrap:wrap; gap:10px; }
+        .card { background:white; padding:15px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); width:220px; position:relative; }
+        .card h3 { margin:0 0 5px; font-size:16px; }
+        .card small { display:block; margin-bottom:5px; color:#555; }
+        .card button { margin-top:5px; padding:4px 8px; font-size:12px; cursor:pointer; border:none; border-radius:4px; }
+        .card button.edit { background:#f1c40f; color:white; }
+        .card button.delete { background:#e74c3c; color:white; }
+        button.create-btn { background:#3498db; color:white; padding:8px 12px; margin-bottom:10px; border:none; border-radius:4px; cursor:pointer; }
+
+        /* Modal */
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
+        .modal-content { background:white; padding:20px; border-radius:8px; width:300px; max-height:90%; overflow:auto; position:relative; }
+        .modal-content h2 { margin-top:0; }
+        .modal-content input { width:100%; margin-bottom:8px; padding:6px; box-sizing:border-box; }
+        .modal-content button { width:100%; padding:8px; margin-top:10px; }
+        .modal-close { position:absolute; top:8px; right:8px; cursor:pointer; font-weight:bold; font-size:16px; }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <aside class="menu">
+        <h3>Справочники</h3>
+        <button onclick="loadPage('areas')" id="btn-areas">Areas</button>
+        <button onclick="loadPage('organizations')" id="btn-organizations">Organizations</button>
+        <button onclick="loadPage('plants')" id="btn-plants">Power Plants</button>
+        <button onclick="loadPage('powerUnits')" id="btn-powerUnits">Power Units</button>
+        <button onclick="loadPage('equipment')" id="btn-equipment">Equipment</button>
+    </aside>
+
+    <main class="content" id="content"></main>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+    <div class="modal-content" id="modalContent">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <h2 id="modalTitle">Создать запись</h2>
+        <div id="modalForm"></div>
+        <button onclick="submitModal()">Сохранить</button>
+    </div>
+</div>
+
+<script>
+    const api = {
+      get: url => fetch(url).then(r => r.json()),
+      post: async (url, body) => {
+        const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        if (r.status === 204) return {};       // пустой ответ
+        const text = await r.text();
+        return text ? JSON.parse(text) : {};
+      },
+      put: async (url, body) => {
+        const r = await fetch(url, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        if (r.status === 204) return {};       // пустой ответ
+        const text = await r.text();
+        return text ? JSON.parse(text) : {};
+      },
+      del: async url => {
+        const r = await fetch(url, {method:'DELETE'});
+        return r.status === 204 ? 'Deleted' : await r.text();
+      }
+    };
+
+        let currentPage = '';
+        let modalCallback = null;
+
+        // ===== Flatten tree recursively =====
+        function flattenTree(nodes) {
+          let result = [];
+          nodes.forEach(n => {
+            result.push(n);
+            const children = [
+              ...(n.organizations || []),
+              ...(n.plants || []),
+              ...(n.powerUnits || []),
+              ...(n.equipment || []),
+              ...(n.areas || [])
+            ];
+            if (children.length) result = result.concat(flattenTree(children));
+          });
+          return result;
+        }
+
+        // ===== Load page =====
+        function loadPage(name) {
+          currentPage = name;
+          document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
+          document.getElementById('btn-' + name).classList.add('active');
+          content.innerHTML = `<h1>${name.charAt(0).toUpperCase()+name.slice(1)}</h1>
+                               <button class="create-btn" onclick="openCreateModal()">Создать</button>
+                               <div class="cards" id="cardsContainer"></div>`;
+          fetchData();
+        }
+
+        // ===== Fetch and render =====
+        async function fetchData() {
+          const container = document.getElementById('cardsContainer');
+          let data = [];
+          switch(currentPage) {
+            case 'areas': data = await api.get('/area'); break;
+            case 'organizations': data = await api.get('/organization'); break;
+            case 'plants': data = await api.get('/power-plant'); break;
+            case 'powerUnits': data = await api.get('/power-unit'); break;
+            case 'equipment': data = await api.get('/equipment'); break;
+          }
+
+          const flatData = flattenTree(data);
+
+          container.innerHTML = '';
+          flatData.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+              <h3>${item.name}</h3>
+              ${currentPage==='organizations'?`<small>${item.short_name||''}</small>`:''}
+              ${currentPage==='plants'?`<small>Type: ${item.type||''}</small><small>El: ${item.electrical_power||''}, Th: ${item.thermal_power||''}</small>`:''}
+              ${currentPage==='powerUnits'?`<small>${item.shortName||''}</small><small>Capacity: ${item.capacity||''}</small>`:''}
+              ${currentPage==='equipment'?`<small>${item.shortName||''}</small><small>Type: ${item.type||''}</small><small>Custom: ${item.custom_attributes||''}</small>`:''}
+              <button class="edit" onclick='openEditModal(${JSON.stringify(item)})'>Редактировать</button>
+              <button class="delete" onclick='deleteItem(${item.id})'>Удалить</button>
+            `;
+            container.appendChild(card);
+          });
+        }
+
+        // ===== Modal =====
+        function openCreateModal() {
+          const formHtml = getFormFields();
+          document.getElementById('modalTitle').textContent = `Создать ${currentPage.slice(0,-1)}`;
+          document.getElementById('modalForm').innerHTML = formHtml;
+          modalCallback = createItem;
+          document.getElementById('modal').style.display = 'flex';
+        }
+
+        function openEditModal(item) {
+          const formHtml = getFormFields(item);
+          document.getElementById('modalTitle').textContent = `Редактировать ${currentPage.slice(0,-1)}`;
+          document.getElementById('modalForm').innerHTML = formHtml;
+          modalCallback = () => editItem(item.id);
+          document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+          document.getElementById('modal').style.display = 'none';
+          document.getElementById('modalForm').innerHTML = '';
+        }
+
+        // ===== Form fields =====
+        function getFormFields(data={}) {
+          switch(currentPage) {
+            case 'areas':
+              return `<input id="f_name" placeholder="Name" value="${data.name||''}">
+                      <input id="f_parent" placeholder="Parent ID" value="${data.parent_id||''}">`;
+            case 'organizations':
+              return `<input id="f_name" placeholder="Name" value="${data.name||''}">
+                      <input id="f_short" placeholder="Short name" value="${data.short_name||''}">
+                      <input id="f_parent" placeholder="Parent ID" value="${data.parent_id||''}">
+                      <input id="f_area" placeholder="Area ID" value="${data.area_id||''}">
+                      <input id="f_address" placeholder="Address" value="${data.address||''}">
+                      <input id="f_email" placeholder="Email" value="${data.email||''}">
+                      <input id="f_website" placeholder="Website" value="${data.website||''}">
+                      <input id="f_phone" placeholder="Phone" value="${data.phone_number||''}">`;
+            case 'plants':
+              return `<input id="f_name" placeholder="Name" value="${data.name||''}">
+                      <input id="f_short" placeholder="Short name" value="${data.short_name||''}">
+                      <input id="f_parent" placeholder="Organization ID" value="${data.parent_id||''}">
+                      <input id="f_area" placeholder="Area ID" value="${data.area_id||''}">
+                      <input id="f_type" placeholder="Type" value="${data.type||''}">
+                      <input id="f_el" placeholder="Electrical power" value="${data.electrical_power||''}">
+                      <input id="f_th" placeholder="Thermal power" value="${data.thermal_power||''}">
+                      <input id="f_address" placeholder="Address" value="${data.address||''}">`;
+            case 'powerUnits':
+              return `<input id="f_name" placeholder="Name" value="${data.name||''}">
+                      <input id="f_short" placeholder="Short name" value="${data.shortName||''}">
+                      <input id="f_plant" placeholder="Power Plant ID" value="${data.power_plant_id||''}">
+                      <input id="f_type" placeholder="Type" value="${data.type||''}">
+                      <input id="f_capacity" placeholder="Capacity" value="${data.capacity||''}">`;
+            case 'equipment':
+              return `<input id="f_name" placeholder="Name" value="${data.name||''}">
+                      <input id="f_short" placeholder="Short name" value="${data.shortName||''}">
+                      <input id="f_unit" placeholder="Power Unit ID" value="${data.powerUnitId||''}">
+                      <input id="f_type" placeholder="Type" value="${data.type||''}">
+                      <input id="f_custom" placeholder="Custom Attributes" value="${data.custom_attributes||''}">`;
+          }
+        }
+
+        // ===== Submit modal =====
+        function submitModal() { if(modalCallback) modalCallback(); }
+
+        // ===== CRUD =====
+        async function createItem() {
+          let body = {};
+          switch(currentPage) {
+            case 'areas': body = {id:0, name:f_name.value, parent_id:Number(f_parent.value)||null}; break;
+            case 'organizations':
+              body = {id:0, name:f_name.value, short_name:f_short.value, parent_id:Number(f_parent.value)||null,
+                      area_id:Number(f_area.value)||null, address:f_address.value, email:f_email.value,
+                      website:f_website.value, phone_number:f_phone.value};
+              break;
+            case 'plants':
+              body = {id:0, name:f_name.value, short_name:f_short.value, parent_id:Number(f_parent.value)||null,
+                      area_id:Number(f_area.value)||null, type:f_type.value,
+                      electrical_power:Number(f_el.value)||null, thermal_power:Number(f_th.value)||null,
+                      address:f_address.value};
+              break;
+            case 'powerUnits':
+              body = {id:0, name:f_name.value, shortName:f_short.value, power_plant_id:Number(f_plant.value)||null,
+                      type:f_type.value, capacity:Number(f_capacity.value)||null};
+              break;
+            case 'equipment':
+              body = {id:0, name:f_name.value, shortName:f_short.value, powerUnitId:Number(f_unit.value)||null,
+                      type:f_type.value, custom_attributes:f_custom.value};
+              break;
+          }
+          await api.post(`/${currentPage==='areas'?'area':currentPage==='organizations'?'organization':
+                          currentPage==='plants'?'power-plant':currentPage==='powerUnits'?'power-unit':'equipment'}`, body);
+          closeModal(); fetchData();
+        }
+
+        async function editItem(id) {
+          let body = {};
+          switch(currentPage) {
+            case 'areas':
+              body = {id, name:f_name.value, parent_id:Number(f_parent.value)||null};
+              break;
+            case 'organizations':
+              body = {id, name:f_name.value, short_name:f_short.value, parent_id:Number(f_parent.value)||null,
+                      area_id:Number(f_area.value)||null, address:f_address.value, email:f_email.value,
+                      website:f_website.value, phone_number:f_phone.value};
+              break;
+            case 'plants':
+              body = {id, name:f_name.value, short_name:f_short.value, parent_id:Number(f_parent.value)||null,
+                      area_id:Number(f_area.value)||null, type:f_type.value,
+                      electrical_power:Number(f_el.value)||null, thermal_power:Number(f_th.value)||null,
+                      address:f_address.value};
+              break;
+            case 'powerUnits':
+              body = {id, name:f_name.value, shortName:f_short.value, power_plant_id:Number(f_plant.value)||null,
+                      type:f_type.value, capacity:Number(f_capacity.value)||null};
+              break;
+            case 'equipment':
+              body = {id, name:f_name.value, shortName:f_short.value, powerUnitId:Number(f_unit.value)||null,
+                      type:f_type.value, custom_attributes:f_custom.value};
+              break;
+          }
+
+          try {
+            await api.put(`/${currentPage==='areas'?'area':currentPage==='organizations'?'organization':
+                           currentPage==='plants'?'power-plant':currentPage==='powerUnits'?'power-unit':'equipment'}/${id}`, body);
+            closeModal();      // <-- закрываем модальное окно после успешного редактирования
+            fetchData();       // <-- обновляем карточки на странице
+          } catch(e) {
+            alert("Ошибка при сохранении: " + e);
+          }
+        }
+
+        async function deleteItem(id) {
+          if(confirm('Удалить запись?')) {
+            await api.del(`/${currentPage==='areas'?'area':currentPage==='organizations'?'organization':
+                           currentPage==='plants'?'power-plant':currentPage==='powerUnits'?'power-unit':'equipment'}/${id}`);
+            fetchData();
+          }
+        }
+
+        // ===== Init =====
+        loadPage('organizations');
+</script>
+
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.example
 
 import com.example.data.area.AreaRepository
 import com.example.data.equipment.EquipmentRepository
+import com.example.data.equipment.EventRepository
 import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
 import di.appModule
@@ -30,6 +31,7 @@ fun Application.module() {
     val powerPlantRepository by inject<PowerPlantRepository>()
     val powerUnitRepository by inject<PowerUnitRepository>()
     val equipmentRepository by inject<EquipmentRepository>()
+    val eventRepository by inject<EventRepository>()
 
     configureSerialization()
     configureDatabases()
@@ -39,5 +41,6 @@ fun Application.module() {
         powerPlantRepository,
         powerUnitRepository,
         equipmentRepository,
+        eventRepository
     )
 }
