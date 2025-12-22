@@ -1,11 +1,12 @@
 package com.example.data.event
 
+import com.example.data.event_workscope.EventWorkscopeDto
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EventDto(
+data class EventWithChildrenDto(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("short_name") val shortName: String? = null,
@@ -17,4 +18,6 @@ data class EventDto(
 
     @SerialName("type") val type: String? = null,
     @SerialName("custom_attributes") val customAttributes: String? = null,
+
+    @SerialName("workscope_items") val workscopeItems: List<EventWorkscopeDto>? = null
 )

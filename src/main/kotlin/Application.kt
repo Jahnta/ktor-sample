@@ -2,7 +2,7 @@ package com.example
 
 import com.example.data.area.AreaRepository
 import com.example.data.equipment.EquipmentRepository
-import com.example.data.equipment.EventRepository
+import com.example.data.event.EventRepository
 import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
 import di.appModule

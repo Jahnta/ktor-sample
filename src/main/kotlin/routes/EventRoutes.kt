@@ -1,7 +1,7 @@
 package routes
 
-import com.example.data.equipment.EventRepository
 import com.example.data.event.EventDto
+import com.example.data.event.EventRepository
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*

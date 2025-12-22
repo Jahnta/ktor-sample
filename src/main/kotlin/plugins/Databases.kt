@@ -3,9 +3,11 @@ package plugins
 import com.example.data.area.AreaTable
 import com.example.data.equipment.EquipmentTable
 import com.example.data.event.EventTable
+import com.example.data.event_workscope.EventWorkscopeTable
 import com.example.data.organization.OrganizationTable
 import com.example.data.powerplant.PowerPlantTable
 import com.example.data.powerunit.PowerUnitTable
+import com.example.data.workscope.WorkscopeTable
 import common.*
 import io.ktor.server.application.*
 import org.jetbrains.exposed.v1.core.StdOutSqlLogger
@@ -39,6 +41,8 @@ fun Application.configureDatabases() {
             PowerUnitTable,
             EquipmentTable,
             EventTable,
+            WorkscopeTable,
+            EventWorkscopeTable,
         )
         SchemaUtils.create(
             AreaTable,
@@ -47,6 +51,8 @@ fun Application.configureDatabases() {
             PowerUnitTable,
             EquipmentTable,
             EventTable,
+            WorkscopeTable,
+            EventWorkscopeTable,
         )
 
         initAreas()
@@ -55,5 +61,7 @@ fun Application.configureDatabases() {
         initPowerUnits()
         initEquipment()
         initEvents()
+        initWorkscopes()
+        initEventWorkscopes()
     }
 }

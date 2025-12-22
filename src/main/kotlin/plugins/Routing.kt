@@ -2,7 +2,7 @@ package com.example.plugins
 
 import com.example.data.area.AreaRepository
 import com.example.data.equipment.EquipmentRepository
-import com.example.data.equipment.EventRepository
+import com.example.data.event.EventRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*

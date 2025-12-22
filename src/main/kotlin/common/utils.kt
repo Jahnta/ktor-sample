@@ -7,8 +7,12 @@ import org.apache.commons.csv.CSVParser
 import com.example.data.organization.OrganizationEntity
 import com.example.data.powerplant.PowerPlantEntity
 import com.example.data.powerunit.PowerUnitEntity
+import com.example.data.workscope.WorkscopeEntity
 import data.event.EventEntity
+import data.event_workscope.EventWorkscopeEntity
 import kotlinx.datetime.LocalDate
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 fun initAreas() {
     if (AreaEntity.count() > 0) return
@@ -149,9 +153,59 @@ fun initEvents() {
 
             dateStart = row["date_start"]?.let { LocalDate.parse(it) }
             dateEnd = row["date_end"]?.let { LocalDate.parse(it) }
+            status = row["status"]
 
             type = row["type"]
             customAttributes = row["custom_attributes"]
+        }
+        map[id] = entity
+    }
+}
+
+fun initWorkscopes() {
+    if (WorkscopeEntity.count() > 0) return
+
+    val rows = readCsv("/data/workscopes.csv")
+    val map = mutableMapOf<Int, WorkscopeEntity>()
+
+    rows.forEach { row ->
+        val id = row["id"]!!.toInt()
+        val entity = WorkscopeEntity.new(id) {
+            name = row["name"]!!
+            parent = null
+
+            description = row["description"]
+            defaultDuration = row["default_duration"]?.toInt()?.toDuration(DurationUnit.HOURS)
+
+            customAttributes = row["custom_attributes"]
+        }
+        map[id] = entity
+    }
+
+    rows.forEach { row ->
+        val id = row["id"]!!.toInt()
+        val parentId = row["parent_id"]?.toInt()
+
+        if (parentId != null) {
+            map[id]!!.parent = map[parentId]
+        }
+    }
+}
+
+fun initEventWorkscopes() {
+    if (EventWorkscopeEntity.count() > 0) return
+
+    val rows = readCsv("/data/event_workscope.csv")
+    val map = mutableMapOf<Int, EventWorkscopeEntity>()
+
+    rows.forEach { row ->
+        val id = row["id"]!!.toInt()
+        val entity = EventWorkscopeEntity.new(id) {
+            event = row["event_id"]?.toInt().let { EventEntity.findById(it!!) }!!
+            workscope = row["workscope_id"]?.toInt().let { WorkscopeEntity.findById(it!!) }!!
+
+            duration = row["duration"]?.toInt()?.toDuration(DurationUnit.HOURS)
+            status = row["status"]
         }
         map[id] = entity
     }

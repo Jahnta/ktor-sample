@@ -69,8 +69,10 @@ const ENTITIES = {
             { id:'equipment_id', label:'Equipment ID' },
             { id:'date_start', label:'Date start' },
             { id:'date_end', label:'Date End' },
+            { id:'status', label:'Status'},
             { id:'type', label:'Type' },
-            { id:'custom_attributes', label:'Custom attributes' }
+            { id:'custom_attributes', label:'Custom attributes' },
+            { id:'workscope_items', label:'Workscope_items' }
         ]
     },
 };
