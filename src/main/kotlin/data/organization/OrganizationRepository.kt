@@ -2,19 +2,21 @@ package com.example.data.organization
 
 import com.example.data.area.AreaEntity
 import org.jetbrains.exposed.v1.core.isNull
-import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
+import plugins.newSuspendTransaction
 
 class OrganizationRepository {
 
-    suspend fun getAll(): List<OrganizationWithChildrenDto> = suspendTransaction {
-        OrganizationEntity.find { OrganizationTable.parentId.isNull() }.map { it.toDtoWithChildren() }
+    suspend fun getAll(): List<OrganizationWithChildrenDto> = newSuspendTransaction {
+        OrganizationEntity
+            .find { OrganizationTable.parentId.isNull() }
+            .map { it.toDtoWithChildren() }
     }
 
-    suspend fun getById(id: Int): OrganizationWithChildrenDto? = suspendTransaction {
+    suspend fun getById(id: Int): OrganizationWithChildrenDto? = newSuspendTransaction {
         OrganizationEntity.findById(id)?.toDtoWithChildren()
     }
 
-    suspend fun create(dto: OrganizationCreateDto): OrganizationDto = suspendTransaction {
+    suspend fun create(dto: OrganizationCreateDto): OrganizationDto = newSuspendTransaction {
         val entity = OrganizationEntity.new {
             name = dto.name
             shortName = dto.shortName
@@ -29,8 +31,8 @@ class OrganizationRepository {
         entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: OrganizationCreateDto): Boolean = suspendTransaction {
-        val entity = OrganizationEntity.findById(id) ?: return@suspendTransaction false
+    suspend fun update(id: Int, dto: OrganizationCreateDto): Boolean = newSuspendTransaction {
+        val entity = OrganizationEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {
             name = dto.name
@@ -46,8 +48,8 @@ class OrganizationRepository {
         true
     }
 
-    suspend fun delete(id: Int): Boolean = suspendTransaction {
-        val entity = OrganizationEntity.findById(id) ?: return@suspendTransaction false
+    suspend fun delete(id: Int): Boolean = newSuspendTransaction {
+        val entity = OrganizationEntity.findById(id) ?: return@newSuspendTransaction false
         entity.delete()
         true
     }

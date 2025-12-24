@@ -18,6 +18,8 @@ class PowerUnitEntity(id: EntityID<Int>) : IntEntity(id) {
     var type by PowerUnitTable.type
     var capacity by PowerUnitTable.capacity
 
+    val equipment by EquipmentEntity optionalReferrersOn EquipmentTable.powerUnitId
+
 
     fun toDto() = PowerUnitDto(
         id = id.value,
@@ -30,7 +32,6 @@ class PowerUnitEntity(id: EntityID<Int>) : IntEntity(id) {
     )
 
     fun toDtoWithChildren(): PowerUnitWithChildrenDto {
-        val equipment = EquipmentEntity.find { EquipmentTable.powerUnitId eq this.id }.map { it.toDto() }
 
         return PowerUnitWithChildrenDto(
             id = id.value,
@@ -41,7 +42,7 @@ class PowerUnitEntity(id: EntityID<Int>) : IntEntity(id) {
             type = type,
             capacity = capacity,
 
-            equipment = equipment,
+            equipment = equipment.map { it.toDto() },
         )
     }
 }

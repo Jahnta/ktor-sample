@@ -12,4 +12,6 @@ object EventWorkscopeTable : IntIdTable("event_workscope") {
 
     val duration = duration("duration").nullable()
     val status = varchar("status", 50).nullable()
+
+    val customAttributes = text("custom_attributes").nullable()
 }

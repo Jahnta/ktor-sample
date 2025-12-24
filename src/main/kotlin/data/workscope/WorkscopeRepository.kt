@@ -2,19 +2,19 @@ package com.example.data.equipment
 
 import com.example.data.event.WorkscopeDto
 import com.example.data.workscope.WorkscopeEntity
-import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
+import plugins.newSuspendTransaction
 
 class WorkscopeRepository {
 
-    suspend fun getAll(): List<WorkscopeDto> = suspendTransaction {
+    suspend fun getAll(): List<WorkscopeDto> = newSuspendTransaction {
         WorkscopeEntity.all().map { it.toDto() }
     }
 
-    suspend fun getById(id: Int): WorkscopeDto? = suspendTransaction {
+    suspend fun getById(id: Int): WorkscopeDto? = newSuspendTransaction {
         WorkscopeEntity.findById(id)?.toDto()
     }
 
-    suspend fun create(dto: WorkscopeDto): WorkscopeDto = suspendTransaction {
+    suspend fun create(dto: WorkscopeDto): WorkscopeDto = newSuspendTransaction {
         val entity = WorkscopeEntity.new {
             name = dto.name
             parent = dto.parentId?.let { WorkscopeEntity.findById(it) }
@@ -26,8 +26,8 @@ class WorkscopeRepository {
         entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: WorkscopeDto): Boolean = suspendTransaction {
-        val entity = WorkscopeEntity.findById(id) ?: return@suspendTransaction false
+    suspend fun update(id: Int, dto: WorkscopeDto): Boolean = newSuspendTransaction {
+        val entity = WorkscopeEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {
             name = dto.name
@@ -40,8 +40,8 @@ class WorkscopeRepository {
         true
     }
 
-    suspend fun delete(id: Int): Boolean = suspendTransaction {
-        val entity = WorkscopeEntity.findById(id) ?: return@suspendTransaction false
+    suspend fun delete(id: Int): Boolean = newSuspendTransaction {
+        val entity = WorkscopeEntity.findById(id) ?: return@newSuspendTransaction false
         entity.delete()
         true
     }

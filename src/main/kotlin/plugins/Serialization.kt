@@ -5,16 +5,18 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.serialization.json.Json
 
+object JsonConfig {
+    val json = Json {
+        prettyPrint = true       // для БД и CSV не нужно
+        isLenient = true
+        ignoreUnknownKeys = true
+        encodeDefaults = false
+    }
+}
+
 fun Application.configureSerialization() {
 
     install(ContentNegotiation) {
-        json(
-            Json {
-                prettyPrint = true
-                isLenient = true
-                ignoreUnknownKeys = true
-                encodeDefaults = false
-            }
-        )
+        json(JsonConfig.json)
     }
 }

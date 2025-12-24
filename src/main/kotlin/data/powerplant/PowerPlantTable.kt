@@ -11,7 +11,7 @@ object PowerPlantTable: IntIdTable("power_plants") {
     val parentId = reference("parent_id", OrganizationTable, onDelete = ReferenceOption.SET_NULL).nullable()
 
     val areaId = reference("area_id", AreaTable, onDelete = ReferenceOption.SET_NULL).nullable()
-    val address = varchar("address", 100).nullable()
+    val address = varchar("address", 150).nullable()
     val email = varchar("email", 50).nullable()
     val website = varchar("website", 50).nullable()
     val phoneNumber = varchar("phone_number", 50).nullable()

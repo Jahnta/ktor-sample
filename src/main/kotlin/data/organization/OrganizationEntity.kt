@@ -1,12 +1,11 @@
 package com.example.data.organization
 
 import com.example.data.area.AreaEntity
-import org.jetbrains.exposed.v1.core.dao.id.EntityID
-import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.dao.IntEntity
-import org.jetbrains.exposed.v1.dao.IntEntityClass
 import com.example.data.powerplant.PowerPlantEntity
 import com.example.data.powerplant.PowerPlantTable
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.dao.IntEntity
+import org.jetbrains.exposed.v1.dao.IntEntityClass
 
 class OrganizationEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<OrganizationEntity>(OrganizationTable)
@@ -21,17 +20,18 @@ class OrganizationEntity(id: EntityID<Int>) : IntEntity(id) {
     var website by OrganizationTable.website
     var phoneNumber by OrganizationTable.phoneNumber
 
+    val organizations by OrganizationEntity optionalReferrersOn OrganizationTable.parentId
+    val powerPlants by PowerPlantEntity optionalReferrersOn PowerPlantTable.parentId
+
 
     fun toDtoWithChildren(): OrganizationWithChildrenDto {
-        val organizations = find { OrganizationTable.parentId eq this.id }.map { it.toDtoWithChildren() }
-        val powerPlants = PowerPlantEntity.find { PowerPlantTable.parentId eq this.id }.map { it.toDto() }
         return OrganizationWithChildrenDto(
             id = id.value,
             name = name,
             shortName = shortName,
             parentId = parent?.id?.value,
-            organizations = organizations,
-            powerPlants = powerPlants,
+            organizations = organizations.map { it.toDtoWithChildren() },
+            powerPlants = powerPlants.map { it.toDto() },
 
             area = area?.toDto(),
             address = address,

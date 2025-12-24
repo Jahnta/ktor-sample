@@ -4,6 +4,7 @@ import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
 import com.example.data.powerunit.PowerUnitEntity
+import com.example.plugins.JsonConfig
 
 class EquipmentEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<EquipmentEntity>(EquipmentTable)
@@ -23,6 +24,6 @@ class EquipmentEntity(id: EntityID<Int>) : IntEntity(id) {
         powerUnitId = powerUnit?.id?.value,
 
         type = type,
-        customAttributes = customAttributes
+        customAttributes = customAttributes?.let { JsonConfig.json.decodeFromString(it) }
     )
 }

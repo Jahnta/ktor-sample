@@ -8,6 +8,7 @@ import com.example.data.organization.OrganizationEntity
 import com.example.data.powerplant.PowerPlantEntity
 import com.example.data.powerunit.PowerUnitEntity
 import com.example.data.workscope.WorkscopeEntity
+import com.example.plugins.JsonConfig
 import data.event.EventEntity
 import data.event_workscope.EventWorkscopeEntity
 import kotlinx.datetime.LocalDate
@@ -206,6 +207,8 @@ fun initEventWorkscopes() {
 
             duration = row["duration"]?.toInt()?.toDuration(DurationUnit.HOURS)
             status = row["status"]
+
+            customAttributes = row["custom_attributes"]
         }
         map[id] = entity
     }

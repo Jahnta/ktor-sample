@@ -49,5 +49,11 @@ fun Route.eventRoutes(repository: EventRepository) {
                 call.respond(HttpStatusCode.NoContent)
             }
         }
+
+        get("/{id}/workscopes") {
+            val id = call.parameters["id"]!!.toInt()
+            val workscopes = repository.getEventWorkscopes(id)
+            call.respond(HttpStatusCode.OK, workscopes)
+        }
     }
 }

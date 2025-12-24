@@ -1,20 +1,27 @@
 package com.example.data.powerplant
 
 import com.example.data.area.AreaEntity
-import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import com.example.data.organization.OrganizationEntity
+import com.example.data.powerunit.PowerUnitEntity
+import org.jetbrains.exposed.v1.dao.with
+import plugins.newSuspendTransaction
 
 class PowerPlantRepository {
 
-    suspend fun getAll(): List<PowerPlantWithChildrenDto> = suspendTransaction {
-        PowerPlantEntity.all().map { it.toDtoWithChildren() }
+    suspend fun getAll(): List<PowerPlantWithChildrenDto> = newSuspendTransaction {
+        PowerPlantEntity
+            .all()
+            .with(PowerPlantEntity::parent)
+            .with(PowerPlantEntity::powerUnits)
+            .with(PowerPlantEntity::area)
+            .map { it.toDtoWithChildren() }
     }
 
-    suspend fun getById(id: Int): PowerPlantWithChildrenDto? = suspendTransaction {
+    suspend fun getById(id: Int): PowerPlantWithChildrenDto? = newSuspendTransaction {
         PowerPlantEntity.findById(id)?.toDtoWithChildren()
     }
 
-    suspend fun create(dto: PowerPlantCreateDto): PowerPlantCreateDto = suspendTransaction {
+    suspend fun create(dto: PowerPlantCreateDto): PowerPlantCreateDto = newSuspendTransaction {
         val entity = PowerPlantEntity.new {
             name = dto.name
             shortName = dto.shortName
@@ -33,8 +40,8 @@ class PowerPlantRepository {
         entity.toCreateDto()
     }
 
-    suspend fun update(id: Int, dto: PowerPlantCreateDto): Boolean = suspendTransaction {
-        val entity = PowerPlantEntity.findById(id) ?: return@suspendTransaction false
+    suspend fun update(id: Int, dto: PowerPlantCreateDto): Boolean = newSuspendTransaction {
+        val entity = PowerPlantEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {
             name = dto.name
@@ -54,8 +61,8 @@ class PowerPlantRepository {
         true
     }
 
-    suspend fun delete(id: Int): Boolean = suspendTransaction {
-        val entity = PowerPlantEntity.findById(id) ?: return@suspendTransaction false
+    suspend fun delete(id: Int): Boolean = newSuspendTransaction {
+        val entity = PowerPlantEntity.findById(id) ?: return@newSuspendTransaction false
         entity.delete()
         true
     }

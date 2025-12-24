@@ -3,6 +3,7 @@ package com.example.data.event
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class EventDto(
@@ -16,5 +17,5 @@ data class EventDto(
     @SerialName("status") val status: String? = null,
 
     @SerialName("type") val type: String? = null,
-    @SerialName("custom_attributes") val customAttributes: String? = null,
+    @SerialName("custom_attributes") val customAttributes: Map<String, JsonElement>? = null,
 )

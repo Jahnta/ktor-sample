@@ -26,6 +26,8 @@ class PowerPlantEntity(id: EntityID<Int>) : IntEntity(id) {
     var electricalPower by PowerPlantTable.electricalPower
     var thermalPower by PowerPlantTable.thermalPower
 
+    val powerUnits by PowerUnitEntity optionalReferrersOn PowerUnitTable.powerPlantId
+
 
     fun toDto() = PowerPlantDto(
         id = id.value,
@@ -61,25 +63,22 @@ class PowerPlantEntity(id: EntityID<Int>) : IntEntity(id) {
         thermalPower = thermalPower,
     )
 
-    fun toDtoWithChildren(): PowerPlantWithChildrenDto {
-        val powerUnits = PowerUnitEntity.find { PowerUnitTable.powerPlantId eq this.id }.map { it.toDto() }
-        return PowerPlantWithChildrenDto(
-            id = id.value,
-            name = name,
-            shortName = shortName,
-            parentId = parent?.id?.value,
+    fun toDtoWithChildren() = PowerPlantWithChildrenDto(
+        id = id.value,
+        name = name,
+        shortName = shortName,
+        parentId = parent?.id?.value,
 
-            area = area?.toDto(),
-            address = address,
-            email = email,
-            website = website,
-            phoneNumber = phoneNumber,
+        area = area?.toDto(),
+        address = address,
+        email = email,
+        website = website,
+        phoneNumber = phoneNumber,
 
-            type = type,
-            electricalPower = electricalPower,
-            thermalPower = thermalPower,
+        type = type,
+        electricalPower = electricalPower,
+        thermalPower = thermalPower,
 
-            powerUnits = powerUnits
-        )
-    }
+        powerUnits = powerUnits.map { it.toDto() }
+    )
 }

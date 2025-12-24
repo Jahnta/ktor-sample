@@ -1,19 +1,22 @@
 package com.example.data.area
 
 import org.jetbrains.exposed.v1.core.isNull
-import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
+import org.jetbrains.exposed.v1.dao.with
+import plugins.newSuspendTransaction
 
 class AreaRepository {
 
-    suspend fun getAll(): List<AreaWithChildrenDto> = suspendTransaction {
-        AreaEntity.find { AreaTable.parentId.isNull() }.map { it.toDtoWithChildren() }
+    suspend fun getAll(): List<AreaWithChildrenDto> = newSuspendTransaction {
+        AreaEntity
+            .find { AreaTable.parentId.isNull() }
+            .map { it.toDtoWithChildren() }
     }
 
-    suspend fun getById(id: Int): AreaWithChildrenDto? = suspendTransaction {
+    suspend fun getById(id: Int): AreaWithChildrenDto? = newSuspendTransaction {
         AreaEntity.findById(id)?.toDtoWithChildren()
     }
 
-    suspend fun create(dto: AreaDto): AreaDto = suspendTransaction {
+    suspend fun create(dto: AreaDto): AreaDto = newSuspendTransaction {
         val entity = AreaEntity.new {
             name = dto.name
             parent = dto.parentId?.let { AreaEntity.findById(it) }
@@ -21,8 +24,8 @@ class AreaRepository {
         entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: AreaDto): Boolean = suspendTransaction {
-        val entity = AreaEntity.findById(id) ?: return@suspendTransaction false
+    suspend fun update(id: Int, dto: AreaDto): Boolean = newSuspendTransaction {
+        val entity = AreaEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {
             name = dto.name
@@ -31,8 +34,8 @@ class AreaRepository {
         true
     }
 
-    suspend fun delete(id: Int): Boolean = suspendTransaction {
-        val entity = AreaEntity.findById(id) ?: return@suspendTransaction false
+    suspend fun delete(id: Int): Boolean = newSuspendTransaction {
+        val entity = AreaEntity.findById(id) ?: return@newSuspendTransaction false
         entity.delete()
         true
     }
