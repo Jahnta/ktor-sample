@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import com.example.data.powerplant.PowerPlantRepository
+import com.example.data.powerplant.PowerPlantUpdateDto
 
 fun Route.powerPlantRoutes(repository: PowerPlantRepository) {
 
@@ -31,7 +32,7 @@ fun Route.powerPlantRoutes(repository: PowerPlantRepository) {
 
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val dto = call.receive<PowerPlantCreateDto>()
+            val dto = call.receive<PowerPlantUpdateDto>()
 
             if (!repository.update(id, dto)) {
                 call.respond(HttpStatusCode.NotFound)

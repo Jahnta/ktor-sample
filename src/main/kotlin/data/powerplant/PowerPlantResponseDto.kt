@@ -1,18 +1,17 @@
 package com.example.data.powerplant
 
-import com.example.data.area.AreaDto
-import kotlinx.serialization.Serializable
-import com.example.data.powerunit.PowerUnitDto
+import com.example.data.area.AreaResponseDto
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
-data class PowerPlantWithChildrenDto(
+data class PowerPlantResponseDto(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("short_name") val shortName: String? = null,
     @SerialName("parent_id") val parentId: Int? = null,
 
-    @SerialName("area") val area: AreaDto? = null,
+    @SerialName("area") val area: AreaResponseDto? = null,
     @SerialName("address") val address: String? = null,
     @SerialName("email") val email: String? = null,
     @SerialName("website") val website: String? = null,
@@ -21,6 +20,4 @@ data class PowerPlantWithChildrenDto(
     @SerialName("type") val type: String? = null,
     @SerialName("electrical_power") val electricalPower: Double? = null,
     @SerialName("thermal_power") val thermalPower: Double? = null,
-
-    @SerialName("power_units") val powerUnits: List<PowerUnitDto> = emptyList()
 )

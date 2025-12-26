@@ -1,20 +1,20 @@
 package com.example.data.equipment
 
-import com.example.data.event.WorkscopeDto
+import com.example.data.event.WorkscopeResponseDto
 import com.example.data.workscope.WorkscopeEntity
 import plugins.newSuspendTransaction
 
 class WorkscopeRepository {
 
-    suspend fun getAll(): List<WorkscopeDto> = newSuspendTransaction {
+    suspend fun getAll(): List<WorkscopeResponseDto> = newSuspendTransaction {
         WorkscopeEntity.all().map { it.toDto() }
     }
 
-    suspend fun getById(id: Int): WorkscopeDto? = newSuspendTransaction {
+    suspend fun getById(id: Int): WorkscopeResponseDto? = newSuspendTransaction {
         WorkscopeEntity.findById(id)?.toDto()
     }
 
-    suspend fun create(dto: WorkscopeDto): WorkscopeDto = newSuspendTransaction {
+    suspend fun create(dto: WorkscopeResponseDto): WorkscopeResponseDto = newSuspendTransaction {
         val entity = WorkscopeEntity.new {
             name = dto.name
             parent = dto.parentId?.let { WorkscopeEntity.findById(it) }
@@ -26,7 +26,7 @@ class WorkscopeRepository {
         entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: WorkscopeDto): Boolean = newSuspendTransaction {
+    suspend fun update(id: Int, dto: WorkscopeResponseDto): Boolean = newSuspendTransaction {
         val entity = WorkscopeEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {

@@ -6,7 +6,7 @@ import plugins.newSuspendTransaction
 
 class PowerUnitRepository {
 
-    suspend fun getAll(): List<PowerUnitWithChildrenDto> = newSuspendTransaction {
+    suspend fun getAll(): List<PowerUnitResponseWithChildrenDto> = newSuspendTransaction {
         PowerUnitEntity
             .all()
             .with(PowerUnitEntity::powerPlant)
@@ -14,11 +14,11 @@ class PowerUnitRepository {
             .map { it.toDtoWithChildren() }
     }
 
-    suspend fun getById(id: Int): PowerUnitWithChildrenDto? = newSuspendTransaction {
+    suspend fun getById(id: Int): PowerUnitResponseWithChildrenDto? = newSuspendTransaction {
         PowerUnitEntity.Companion.findById(id)?.toDtoWithChildren()
     }
 
-    suspend fun create(dto: PowerUnitDto): PowerUnitDto = newSuspendTransaction {
+    suspend fun create(dto: PowerUnitCreateDto): PowerUnitResponseDto = newSuspendTransaction {
         val entity = PowerUnitEntity.Companion.new {
             name = dto.name
             shortName = dto.shortName
@@ -30,7 +30,7 @@ class PowerUnitRepository {
         entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: PowerUnitDto): Boolean = newSuspendTransaction {
+    suspend fun update(id: Int, dto: PowerUnitUpdateDto): Boolean = newSuspendTransaction {
         val entity = PowerUnitEntity.Companion.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {

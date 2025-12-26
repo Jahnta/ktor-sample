@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin · Organizations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --sidebar: #1f2937;
+            --sidebar-active: #374151;
+            --text: #111827;
+            --border: #e5e7eb;
+            --primary: #2563eb;
+            --danger: #dc2626;
+            --card-bg: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+        }
+
+        aside {
+            width: 220px;
+            background: var(--sidebar);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        aside h2 { margin: 0; padding: 16px; font-size: 16px; border-bottom: 1px solid #374151; }
+        nav a { padding: 12px 16px; text-decoration: none; color: #e5e7eb; display: block; }
+        nav a.active { background: var(--sidebar-active); font-weight: 600; }
+
+        main { flex: 1; padding: 24px; overflow-y: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        header h1 { margin: 0; font-size: 22px; }
+
+        button { border: none; background: var(--primary); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        button.secondary { background: #6b7280; }
+        button.danger { background: var(--danger); }
+
+        .organization { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+        .org-header { display: flex; justify-content: space-between; align-items: center; }
+        .org-title { font-size: 18px; font-weight: 600; }
+        .org-info { margin-top: 12px; display: grid; grid-template-columns: 160px 1fr; gap: 6px 12px; font-size: 0.95em; }
+        .org-info-label { color: #6b7280; }
+
+        .children { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; }
+        .children-header { cursor: pointer; font-weight: 600; color: var(--primary); display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .children-header span { font-size: 0.85em; color: #6b7280; }
+
+        .children-content {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .children.open .children-content {
+            opacity: 1;
+        }
+
+        dialog { border: none; border-radius: 8px; padding: 20px; width: 420px; }
+        dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+        form h3 { margin-top: 0; }
+        form label { display: block; margin-bottom: 4px; font-size: 0.85em; color: #374151; }
+        form input { width: 100%; padding: 6px; margin-bottom: 12px; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    </style>
+</head>
+<body>
+
+<aside>
+    <h2>Admin</h2>
+    <nav>
+        <a class="active" href="#">Organizations</a>
+    </nav>
+</aside>
+
+<main>
+    <header>
+        <h1>Organizations</h1>
+        <button onclick="openCreate()">Создать</button>
+    </header>
+    <section id="content"></section>
+</main>
+
+<!-- Create / Edit Dialog -->
+<dialog id="orgDialog">
+    <form method="dialog">
+        <h3 id="dialogTitle"></h3>
+        <input type="hidden" id="orgId">
+        <label>Название</label><input id="orgName" required>
+        <label>Краткое название</label><input id="shortName">
+        <label>Parent ID</label><input id="parentId" type="number">
+        <label>Адрес</label><input id="address">
+        <label>Email</label><input id="email">
+        <label>Website</label><input id="website">
+        <label>Телефон</label><input id="phone">
+        <div class="form-actions">
+            <button class="secondary" type="button" onclick="closeDialog()">Отмена</button>
+            <button type="button" onclick="save()">Сохранить</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- Delete Dialog -->
+<dialog id="deleteDialog">
+    <form method="dialog">
+        <h3>Удалить организацию?</h3>
+        <p id="deleteText"></p>
+        <div class="form-actions">
+            <button class="secondary" type="button" onclick="closeDelete()">Отмена</button>
+            <button class="danger" type="button" onclick="confirmDelete()">Удалить</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+    const api = '/organizations';
+    const content = document.getElementById('content');
+    const orgDialog = document.getElementById('orgDialog');
+    const deleteDialog = document.getElementById('deleteDialog');
+    const orgIdInput = document.getElementById('orgId');
+    const orgNameInput = document.getElementById('orgName');
+    const shortNameInput = document.getElementById('shortName');
+    const parentIdInput = document.getElementById('parentId');
+    const addressInput = document.getElementById('address');
+    const emailInput = document.getElementById('email');
+    const websiteInput = document.getElementById('website');
+    const phoneInput = document.getElementById('phone');
+    let deleteId = null;
+
+    // Состояние открыто/закрыто для дочерних организаций
+    const childrenState = {};
+
+    loadAll();
+
+    async function loadAll() {
+        const res = await fetch(api);
+        const data = await res.json();
+        content.innerHTML = '';
+        data.forEach(o => content.appendChild(renderOrganization(o)));
+    }
+
+    function renderOrganization(o) {
+        const section = document.createElement('section');
+        section.className = 'organization';
+        section.innerHTML = `
+            <div class="org-header">
+                <div class="org-title">${escapeHtml(o.name)} (id=${o.id})</div>
+                <div>
+                    <button class="secondary" onclick="openEdit(${o.id})">✏️</button>
+                    <button class="danger" onclick="openDelete(${o.id}, '${escapeHtml(o.name)}')">🗑</button>
+                </div>
+            </div>
+            <div class="org-info">
+                ${infoRow('Short name', o.short_name)}
+                ${infoRow('Parent ID', o.parent_id)}
+                ${infoRow('Address', o.address)}
+                ${infoRow('Email', o.email)}
+                ${infoRow('Website', o.website)}
+                ${infoRow('Phone', o.phone_number)}
+            </div>
+        `;
+        if (o.organizations?.length) {
+            const children = document.createElement('div');
+            children.className = 'children';
+            children.innerHTML = `
+                <div class="children-header">Дочерние организации <span>${o.organizations.length}</span></div>
+                <div class="children-content"></div>
+            `;
+            const contentDiv = children.querySelector('.children-content');
+            o.organizations.forEach(child => contentDiv.appendChild(renderChildOrganization(child)));
+            const header = children.querySelector('.children-header');
+            const key = `org-${o.id}`;
+            if(childrenState[key]) children.classList.add('open');
+            header.onclick = () => toggleChildren(children, key);
+            section.appendChild(children);
+        }
+        return section;
+    }
+
+    function renderChildOrganization(o) {
+        const section = document.createElement('section');
+        section.className = 'organization';
+        section.innerHTML = `
+            <div class="org-header">
+                <div class="org-title">${escapeHtml(o.name)} (id=${o.id})</div>
+                <div>
+                    <button class="secondary" onclick="openEdit(${o.id})">✏️</button>
+                    <button class="danger" onclick="openDelete(${o.id}, '${escapeHtml(o.name)}')">🗑</button>
+                </div>
+            </div>
+            <div class="org-info">
+                ${infoRow('Short name', o.short_name)}
+                ${infoRow('Parent ID', o.parent_id)}
+                ${infoRow('Address', o.address)}
+                ${infoRow('Email', o.email)}
+                ${infoRow('Website', o.website)}
+                ${infoRow('Phone', o.phone_number)}
+            </div>
+        `;
+        return section;
+    }
+
+    function infoRow(label, value) { if (!value) return ''; return `<div class="org-info-label">${label}</div><div>${escapeHtml(String(value))}</div>`; }
+
+    function toggleChildren(children, key) {
+        const content = children.querySelector('.children-content');
+        if(children.classList.contains('open')) {
+            content.style.maxHeight = '0';
+            children.classList.remove('open');
+            childrenState[key] = false;
+        } else {
+            content.style.maxHeight = content.scrollHeight + 'px';
+            children.classList.add('open');
+            childrenState[key] = true;
+        }
+    }
+
+    // Диалоги
+    function openCreate() { clearForm(); document.getElementById('dialogTitle').textContent='Создать организацию'; orgDialog.showModal(); }
+    function openEdit(id) { fetch(`${api}/${id}`).then(r=>r.json()).then(o=>{ orgIdInput.value=o.id; orgNameInput.value=o.name; shortNameInput.value=o.short_name||''; parentIdInput.value=o.parent_id??''; addressInput.value=o.address||''; emailInput.value=o.email||''; websiteInput.value=o.website||''; phoneInput.value=o.phone_number||''; document.getElementById('dialogTitle').textContent='Редактировать организацию'; orgDialog.showModal(); }); }
+    function openDelete(id,name){ deleteId=id; document.getElementById('deleteText').textContent=name; deleteDialog.showModal(); }
+    function closeDialog(){ orgDialog.close(); }
+    function closeDelete(){ deleteDialog.close(); }
+
+    async function save() {
+        const id = orgIdInput.value;
+        const dto = {
+            id: id?Number(id):undefined,
+            name: orgNameInput.value,
+            short_name: shortNameInput.value||null,
+            parent_id: parentIdInput.value?Number(parentIdInput.value):null,
+            area_id: null,
+            address: addressInput.value||null,
+            email: emailInput.value||null,
+            website: websiteInput.value||null,
+            phone_number: phoneInput.value||null
+        };
+        const method = id?'PUT':'POST';
+        const url = id?`${api}/${id}`:api;
+        const res = await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(dto)});
+        if(res.ok){ orgDialog.close(); loadAll(); } else { alert('Ошибка: '+await res.text()); }
+    }
+
+    async function confirmDelete(){
+        const res = await fetch(`${api}/${deleteId}`,{method:'DELETE'});
+        if(res.ok){ deleteDialog.close(); loadAll(); } else { alert('Ошибка: '+await res.text()); }
+    }
+
+    function clearForm(){ orgIdInput.value=''; orgNameInput.value=''; shortNameInput.value=''; parentIdInput.value=''; addressInput.value=''; emailInput.value=''; websiteInput.value=''; phoneInput.value=''; }
+
+    function escapeHtml(text){ return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
+</script>
+
+</body>
+</html>

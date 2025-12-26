@@ -4,9 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AreaWithChildrenDto(
+data class AreaUpdateDto(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("parent_id") val parentId: Int? = null,
-    @SerialName("areas") val areas: List<AreaWithChildrenDto> = emptyList()
 )

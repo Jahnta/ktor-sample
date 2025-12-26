@@ -7,18 +7,18 @@ import plugins.newSuspendTransaction
 
 class EquipmentRepository {
 
-    suspend fun getAll(): List<EquipmentDto> = newSuspendTransaction {
+    suspend fun getAll(): List<EquipmentResponseDto> = newSuspendTransaction {
         EquipmentEntity
             .all()
             .with(EquipmentEntity::powerUnit)
             .map { it.toDto() }
     }
 
-    suspend fun getById(id: Int): EquipmentDto? = newSuspendTransaction {
+    suspend fun getById(id: Int): EquipmentResponseDto? = newSuspendTransaction {
         EquipmentEntity.findById(id)?.toDto()
     }
 
-    suspend fun create(dto: EquipmentDto): EquipmentDto = newSuspendTransaction {
+    suspend fun create(dto: EquipmentCreateDto): EquipmentResponseDto = newSuspendTransaction {
         val entity = EquipmentEntity.new {
             name = dto.name
             shortName = dto.shortName
@@ -30,7 +30,7 @@ class EquipmentRepository {
         entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: EquipmentDto): Boolean = newSuspendTransaction {
+    suspend fun update(id: Int, dto: EquipmentUpdateDto): Boolean = newSuspendTransaction {
         val entity = EquipmentEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {

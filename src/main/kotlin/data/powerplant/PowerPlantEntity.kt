@@ -1,13 +1,12 @@
 package com.example.data.powerplant
 
 import com.example.data.area.AreaEntity
-import org.jetbrains.exposed.v1.core.dao.id.EntityID
-import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.dao.IntEntity
-import org.jetbrains.exposed.v1.dao.IntEntityClass
 import com.example.data.organization.OrganizationEntity
 import com.example.data.powerunit.PowerUnitEntity
 import com.example.data.powerunit.PowerUnitTable
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.dao.IntEntity
+import org.jetbrains.exposed.v1.dao.IntEntityClass
 
 class PowerPlantEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<PowerPlantEntity>(PowerPlantTable)
@@ -29,7 +28,7 @@ class PowerPlantEntity(id: EntityID<Int>) : IntEntity(id) {
     val powerUnits by PowerUnitEntity optionalReferrersOn PowerUnitTable.powerPlantId
 
 
-    fun toDto() = PowerPlantDto(
+    fun toDto() = PowerPlantResponseDto(
         id = id.value,
         name = name,
         shortName = shortName,
@@ -46,24 +45,7 @@ class PowerPlantEntity(id: EntityID<Int>) : IntEntity(id) {
         thermalPower = thermalPower,
     )
 
-    fun toCreateDto() = PowerPlantCreateDto(
-        id = id.value,
-        name = name,
-        shortName = shortName,
-        parentId = parent?.id?.value,
-
-        areaId = area?.id?.value,
-        address = address,
-        email = email,
-        website = website,
-        phoneNumber = phoneNumber,
-
-        type = type,
-        electricalPower = electricalPower,
-        thermalPower = thermalPower,
-    )
-
-    fun toDtoWithChildren() = PowerPlantWithChildrenDto(
+    fun toDtoWithChildren() = PowerPlantResponseWithChildrenDto(
         id = id.value,
         name = name,
         shortName = shortName,

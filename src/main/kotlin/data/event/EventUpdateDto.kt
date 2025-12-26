@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-data class EventDto(
+data class EventUpdateDto(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("short_name") val shortName: String? = null,

@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OrganizationCreateDto(
-    @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("short_name") val shortName: String? = null,
     @SerialName("parent_id") val parentId: Int? = null,

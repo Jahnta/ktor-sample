@@ -1,7 +1,8 @@
 package routes
 
-import com.example.data.event.EventDto
 import com.example.data.event.EventRepository
+import com.example.data.event.EventCreateDto
+import com.example.data.event.EventUpdateDto
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -24,14 +25,14 @@ fun Route.eventRoutes(repository: EventRepository) {
         }
 
         post {
-            val dto = call.receive<EventDto>()
+            val dto = call.receive<EventCreateDto>()
             val created = repository.create(dto)
             call.respond(HttpStatusCode.Created, created)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val dto = call.receive<EventDto>()
+            val dto = call.receive<EventUpdateDto>()
 
             if (!repository.update(id, dto)) {
                 call.respond(HttpStatusCode.NotFound)

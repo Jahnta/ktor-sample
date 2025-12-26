@@ -17,7 +17,7 @@ class EquipmentEntity(id: EntityID<Int>) : IntEntity(id) {
     var customAttributes by EquipmentTable.custom_attributes
 
 
-    fun toDto() = EquipmentDto(
+    fun toDto() = EquipmentResponseDto(
         id = id.value,
         name = name,
         shortName = shortName,

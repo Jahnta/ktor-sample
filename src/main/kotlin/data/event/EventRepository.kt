@@ -1,7 +1,7 @@
 package com.example.data.event
 
 import com.example.data.equipment.EquipmentEntity
-import com.example.data.event_workscope.EventWorkscopeDto
+import com.example.data.event_workscope.EventWorkscopeResponseDto
 import com.example.data.event_workscope.EventWorkscopeTable
 import com.example.plugins.JsonConfig
 import data.event.EventEntity
@@ -12,7 +12,7 @@ import plugins.newSuspendTransaction
 
 class EventRepository {
 
-    suspend fun getAll(): List<EventDto> = newSuspendTransaction {
+    suspend fun getAll(): List<EventResponseDto> = newSuspendTransaction {
         EventEntity
             .all()
             .with(EventEntity::equipment)
@@ -24,7 +24,7 @@ class EventRepository {
         EventEntity.findById(id)?.toDtoWithChildren()
     }
 
-    suspend fun create(dto: EventDto): EventDto = newSuspendTransaction {
+    suspend fun create(dto: EventCreateDto): EventResponseDto = newSuspendTransaction {
         val entity = EventEntity.new {
             name = dto.name
             shortName = dto.shortName
@@ -40,7 +40,7 @@ class EventRepository {
         entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: EventDto): Boolean = newSuspendTransaction {
+    suspend fun update(id: Int, dto: EventUpdateDto): Boolean = newSuspendTransaction {
         val entity = EventEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {
@@ -64,7 +64,7 @@ class EventRepository {
         true
     }
 
-    suspend fun getEventWorkscopes(id: Int): List<EventWorkscopeDto> = newSuspendTransaction {
+    suspend fun getEventWorkscopes(id: Int): List<EventWorkscopeResponseDto> = newSuspendTransaction {
         EventWorkscopeEntity.find { EventWorkscopeTable.eventId eq id }.map { it.toDto() }
     }
 }

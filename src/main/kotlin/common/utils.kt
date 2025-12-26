@@ -2,16 +2,15 @@ package common
 
 import com.example.data.area.AreaEntity
 import com.example.data.equipment.EquipmentEntity
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
 import com.example.data.organization.OrganizationEntity
 import com.example.data.powerplant.PowerPlantEntity
 import com.example.data.powerunit.PowerUnitEntity
 import com.example.data.workscope.WorkscopeEntity
-import com.example.plugins.JsonConfig
 import data.event.EventEntity
 import data.event_workscope.EventWorkscopeEntity
 import kotlinx.datetime.LocalDate
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVParser
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -111,7 +110,7 @@ fun initPowerUnits() {
             name = row["name"]!!
             shortName = row["short_name"]
             powerPlant = row["plant_id"]?.toInt()?.let { PowerPlantEntity.findById(it) }
-
+            println(powerPlant?.id?.value)
             type = row["type"]
             capacity = row["capacity"]?.toDouble()
         }

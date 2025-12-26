@@ -1,7 +1,9 @@
 package com.example.routes
 
-import com.example.data.powerunit.PowerUnitDto
+import com.example.data.powerunit.PowerUnitCreateDto
+import com.example.data.powerunit.PowerUnitResponseDto
 import com.example.data.powerunit.PowerUnitRepository
+import com.example.data.powerunit.PowerUnitUpdateDto
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -24,14 +26,14 @@ fun Route.powerUnitRoutes(repository: PowerUnitRepository) {
         }
 
         post {
-            val dto = call.receive<PowerUnitDto>()
+            val dto = call.receive<PowerUnitCreateDto>()
             val created = repository.create(dto)
             call.respond(HttpStatusCode.Created, created)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val dto = call.receive<PowerUnitDto>()
+            val dto = call.receive<PowerUnitUpdateDto>()
 
             if (!repository.update(id, dto)) {
                 call.respond(HttpStatusCode.NotFound)

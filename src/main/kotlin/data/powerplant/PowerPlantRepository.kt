@@ -2,13 +2,12 @@ package com.example.data.powerplant
 
 import com.example.data.area.AreaEntity
 import com.example.data.organization.OrganizationEntity
-import com.example.data.powerunit.PowerUnitEntity
 import org.jetbrains.exposed.v1.dao.with
 import plugins.newSuspendTransaction
 
 class PowerPlantRepository {
 
-    suspend fun getAll(): List<PowerPlantWithChildrenDto> = newSuspendTransaction {
+    suspend fun getAll(): List<PowerPlantResponseWithChildrenDto> = newSuspendTransaction {
         PowerPlantEntity
             .all()
             .with(PowerPlantEntity::parent)
@@ -17,11 +16,11 @@ class PowerPlantRepository {
             .map { it.toDtoWithChildren() }
     }
 
-    suspend fun getById(id: Int): PowerPlantWithChildrenDto? = newSuspendTransaction {
+    suspend fun getById(id: Int): PowerPlantResponseWithChildrenDto? = newSuspendTransaction {
         PowerPlantEntity.findById(id)?.toDtoWithChildren()
     }
 
-    suspend fun create(dto: PowerPlantCreateDto): PowerPlantCreateDto = newSuspendTransaction {
+    suspend fun create(dto: PowerPlantCreateDto): PowerPlantResponseDto = newSuspendTransaction {
         val entity = PowerPlantEntity.new {
             name = dto.name
             shortName = dto.shortName
@@ -37,10 +36,10 @@ class PowerPlantRepository {
             electricalPower = dto.electricalPower
             thermalPower = dto.thermalPower
         }
-        entity.toCreateDto()
+        entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: PowerPlantCreateDto): Boolean = newSuspendTransaction {
+    suspend fun update(id: Int, dto: PowerPlantUpdateDto): Boolean = newSuspendTransaction {
         val entity = PowerPlantEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {

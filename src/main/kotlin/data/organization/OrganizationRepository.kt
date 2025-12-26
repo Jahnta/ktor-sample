@@ -6,17 +6,17 @@ import plugins.newSuspendTransaction
 
 class OrganizationRepository {
 
-    suspend fun getAll(): List<OrganizationWithChildrenDto> = newSuspendTransaction {
+    suspend fun getAll(): List<OrganizationResponseWithChildrenDto> = newSuspendTransaction {
         OrganizationEntity
             .find { OrganizationTable.parentId.isNull() }
             .map { it.toDtoWithChildren() }
     }
 
-    suspend fun getById(id: Int): OrganizationWithChildrenDto? = newSuspendTransaction {
+    suspend fun getById(id: Int): OrganizationResponseWithChildrenDto? = newSuspendTransaction {
         OrganizationEntity.findById(id)?.toDtoWithChildren()
     }
 
-    suspend fun create(dto: OrganizationCreateDto): OrganizationDto = newSuspendTransaction {
+    suspend fun create(dto: OrganizationCreateDto): OrganizationResponseDto = newSuspendTransaction {
         val entity = OrganizationEntity.new {
             name = dto.name
             shortName = dto.shortName
@@ -31,7 +31,7 @@ class OrganizationRepository {
         entity.toDto()
     }
 
-    suspend fun update(id: Int, dto: OrganizationCreateDto): Boolean = newSuspendTransaction {
+    suspend fun update(id: Int, dto: OrganizationUpdateDto): Boolean = newSuspendTransaction {
         val entity = OrganizationEntity.findById(id) ?: return@newSuspendTransaction false
 
         entity.apply {

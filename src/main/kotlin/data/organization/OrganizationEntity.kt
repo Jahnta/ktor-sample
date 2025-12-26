@@ -24,8 +24,8 @@ class OrganizationEntity(id: EntityID<Int>) : IntEntity(id) {
     val powerPlants by PowerPlantEntity optionalReferrersOn PowerPlantTable.parentId
 
 
-    fun toDtoWithChildren(): OrganizationWithChildrenDto {
-        return OrganizationWithChildrenDto(
+    fun toDtoWithChildren(): OrganizationResponseWithChildrenDto {
+        return OrganizationResponseWithChildrenDto(
             id = id.value,
             name = name,
             shortName = shortName,
@@ -41,7 +41,7 @@ class OrganizationEntity(id: EntityID<Int>) : IntEntity(id) {
         )
     }
 
-    fun toDto() = OrganizationDto(
+    fun toDto() = OrganizationResponseDto(
         id = id.value,
         name = name,
         shortName = shortName,

@@ -1,7 +1,7 @@
 package data.event
 
 import com.example.data.equipment.EquipmentEntity
-import com.example.data.event.EventDto
+import com.example.data.event.EventResponseDto
 import com.example.data.event.EventTable
 import com.example.data.event.EventWithChildrenDto
 import com.example.data.event_workscope.EventWorkscopeTable
@@ -27,7 +27,7 @@ class EventEntity(id: EntityID<Int>) : IntEntity(id) {
 
     val workscopeItems by EventWorkscopeEntity referrersOn EventWorkscopeTable.eventId
 
-    fun toDto() = EventDto(
+    fun toDto() = EventResponseDto(
         id = id.value,
         name = name,
         shortName = shortName,

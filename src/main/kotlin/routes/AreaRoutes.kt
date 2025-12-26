@@ -1,7 +1,9 @@
 package routes
 
-import com.example.data.area.AreaDto
+import com.example.data.area.AreaCreateDto
+import com.example.data.area.AreaResponseDto
 import com.example.data.area.AreaRepository
+import com.example.data.area.AreaUpdateDto
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
@@ -24,14 +26,14 @@ fun Route.areaRoutes(repository: AreaRepository) {
         }
 
         post {
-            val dto = call.receive<AreaDto>()
+            val dto = call.receive<AreaCreateDto>()
             val created = repository.create(dto)
             call.respond(HttpStatusCode.Created, created)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val dto = call.receive<AreaDto>()
+            val dto = call.receive<AreaUpdateDto>()
 
             if (!repository.update(id, dto)) {
                 call.respond(HttpStatusCode.NotFound)

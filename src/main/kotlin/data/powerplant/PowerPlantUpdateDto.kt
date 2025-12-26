@@ -4,7 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PowerPlantCreateDto(
+data class PowerPlantUpdateDto(
+    @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("short_name") val shortName: String? = null,
     @SerialName("parent_id") val parentId: Int? = null,

@@ -6,7 +6,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlin.time.Duration
 
 @Serializable
-data class EventWorkscopeDto(
+data class EventWorkscopeResponseDto(
     @SerialName("id") val id: Int,
     @SerialName("workscope_name") val workscopeName: String,
     @SerialName("workscope_id") val workscopeId: Int,

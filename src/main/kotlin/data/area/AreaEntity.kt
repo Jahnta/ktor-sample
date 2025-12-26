@@ -11,9 +11,9 @@ class AreaEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by AreaTable.name
     var parent by AreaEntity optionalReferencedOn AreaTable.parentId
 
-    fun toDtoWithChildren(): AreaWithChildrenDto {
+    fun toDtoWithChildren(): AreaResponseWithChildrenDto {
         val areas = find { AreaTable.parentId eq this.id }.map { it.toDtoWithChildren() }
-        return AreaWithChildrenDto(
+        return AreaResponseWithChildrenDto(
             id = id.value,
             name = name,
             parentId = parent?.id?.value,
@@ -21,7 +21,7 @@ class AreaEntity(id: EntityID<Int>) : IntEntity(id) {
         )
     }
 
-    fun toDto() = AreaDto(
+    fun toDto() = AreaResponseDto(
         id = id.value,
         name = name,
         parentId = parent?.id?.value,

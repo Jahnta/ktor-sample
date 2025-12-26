@@ -70,6 +70,5 @@ fun Application.configureDatabases() {
 
 
 suspend fun <T> newSuspendTransaction(block: suspend Transaction.() -> T): T = suspendTransaction {
-    addLogger(StdOutSqlLogger)
     block()
 }

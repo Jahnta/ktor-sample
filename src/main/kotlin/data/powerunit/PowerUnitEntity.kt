@@ -6,7 +6,6 @@ import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.dao.IntEntity
 import org.jetbrains.exposed.v1.dao.IntEntityClass
 import com.example.data.powerplant.PowerPlantEntity
-import org.jetbrains.exposed.v1.core.eq
 
 class PowerUnitEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<PowerUnitEntity>(PowerUnitTable)
@@ -21,7 +20,7 @@ class PowerUnitEntity(id: EntityID<Int>) : IntEntity(id) {
     val equipment by EquipmentEntity optionalReferrersOn EquipmentTable.powerUnitId
 
 
-    fun toDto() = PowerUnitDto(
+    fun toDto() = PowerUnitResponseDto(
         id = id.value,
         name = name,
         shortName = shortName,
@@ -31,9 +30,9 @@ class PowerUnitEntity(id: EntityID<Int>) : IntEntity(id) {
         capacity = capacity,
     )
 
-    fun toDtoWithChildren(): PowerUnitWithChildrenDto {
+    fun toDtoWithChildren(): PowerUnitResponseWithChildrenDto {
 
-        return PowerUnitWithChildrenDto(
+        return PowerUnitResponseWithChildrenDto(
             id = id.value,
             name = name,
             shortName = shortName,

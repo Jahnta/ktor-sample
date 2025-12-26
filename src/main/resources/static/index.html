@@ -2,27 +2,50 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Reference Data</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="layout">
-    <aside class="menu" id="menu"></aside>
-    <main class="content" id="content"></main>
-</div>
+<aside>
+    <h2>Admin</h2>
+    <nav id="sidebar"></nav>
+</aside>
 
+<main>
+    <header>
+        <h1 id="mainTitle"></h1>
+        <button id="createBtn">Создать</button>
+    </header>
+    <section id="content"></section>
+</main>
 
+<dialog id="entityDialog">
+    <form method="dialog" id="entityForm">
+        <h3 id="dialogTitle"></h3>
+        <div id="formFields"></div>
+        <div class="form-actions">
+            <button class="secondary" type="button" id="cancelBtn">Отмена</button>
+            <button type="button" id="saveBtn">Сохранить</button>
+        </div>
+    </form>
+</dialog>
 
-<div class="modal" id="modal">
-    <div class="modal-content">
-        <span class="modal-close" id="modalClose">×</span>
-        <h2 id="modalTitle"></h2>
-        <div id="modalForm"></div>
-        <button id="modalSubmit">Сохранить</button>
-    </div>
-</div>
+<dialog id="deleteDialog">
+    <form method="dialog">
+        <h3>Удалить элемент?</h3>
+        <p id="deleteText"></p>
+        <div class="form-actions">
+            <button class="secondary" type="button" id="deleteCancel">Отмена</button>
+            <button class="danger" type="button" id="deleteConfirm">Удалить</button>
+        </div>
+    </form>
+</dialog>
 
-<script src="app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

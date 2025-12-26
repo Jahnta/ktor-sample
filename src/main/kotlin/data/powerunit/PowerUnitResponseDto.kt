@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PowerUnitDto(
+data class PowerUnitResponseDto(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("short_name") val shortName: String? = null,

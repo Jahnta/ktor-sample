@@ -1,6 +1,6 @@
 package data.event_workscope
 
-import com.example.data.event_workscope.EventWorkscopeDto
+import com.example.data.event_workscope.EventWorkscopeResponseDto
 import com.example.data.event_workscope.EventWorkscopeTable
 import com.example.data.workscope.WorkscopeEntity
 import com.example.plugins.JsonConfig
@@ -20,7 +20,7 @@ class EventWorkscopeEntity(id: EntityID<Int>) : IntEntity(id) {
 
     var customAttributes by EventWorkscopeTable.customAttributes
 
-    fun toDto() = EventWorkscopeDto(
+    fun toDto() = EventWorkscopeResponseDto(
         id = id.value,
         workscopeId = workscope.id.value,
         workscopeName = workscope.name,

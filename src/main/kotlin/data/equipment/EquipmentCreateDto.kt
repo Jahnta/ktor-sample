@@ -5,8 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-data class EquipmentDto(
-    @SerialName("id") val id: Int,
+data class EquipmentCreateDto(
     @SerialName("name") val name: String,
     @SerialName("short_name") val shortName: String? = null,
     @SerialName("power_unit_id") val powerUnitId: Int? = null,

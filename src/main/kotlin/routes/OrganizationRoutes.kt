@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import com.example.data.organization.OrganizationRepository
+import com.example.data.organization.OrganizationUpdateDto
 
 fun Route.organizationRoutes(repository: OrganizationRepository) {
 
@@ -31,7 +32,7 @@ fun Route.organizationRoutes(repository: OrganizationRepository) {
 
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val dto = call.receive<OrganizationCreateDto>()
+            val dto = call.receive<OrganizationUpdateDto>()
 
             if (!repository.update(id, dto)) {
                 call.respond(HttpStatusCode.NotFound)

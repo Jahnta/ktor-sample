@@ -1,7 +1,9 @@
 package com.example.routes
 
-import com.example.data.equipment.EquipmentDto
+import com.example.data.equipment.EquipmentCreateDto
+import com.example.data.equipment.EquipmentResponseDto
 import com.example.data.equipment.EquipmentRepository
+import com.example.data.equipment.EquipmentUpdateDto
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -24,14 +26,14 @@ fun Route.equipmentRoutes(repository: EquipmentRepository) {
         }
 
         post {
-            val dto = call.receive<EquipmentDto>()
+            val dto = call.receive<EquipmentCreateDto>()
             val created = repository.create(dto)
             call.respond(HttpStatusCode.Created, created)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val dto = call.receive<EquipmentDto>()
+            val dto = call.receive<EquipmentUpdateDto>()
 
             if (!repository.update(id, dto)) {
                 call.respond(HttpStatusCode.NotFound)
